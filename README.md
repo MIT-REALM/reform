@@ -65,7 +65,7 @@ python scripts/test.py --path ./logs/cube-single-noisy-singletask-task1-v0/refor
 
 ## Environments
 
-We support the [OGBench](https://seohong.me/projects/ogbench/) benchmark environments. Since we are not doing goal-conditioned RL, make sure to use the `single-task` versions of the environments.
+We support the [OGBench](https://seohong.me/projects/ogbench/) benchmark environments. Since we are not doing goal-conditioned RL, make sure to use the `singletask` versions of the environments.
 
 ## Algorithms
 
