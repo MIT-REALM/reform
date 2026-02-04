@@ -30,7 +30,21 @@
   <script src="./static/js/index.js"></script> -->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/latin-modern-mono@5.0.0/index.css">
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script>
+    window.MathJax = {
+      options: {
+        enableMenu: false // Optional: keeps the UI clean
+      },
+      loader: {load: ['[tex]/ams']},
+      tex: {
+        packages: {'[+]': ['ams']}
+      },
+      svg: {
+        fontCache: 'global' // SVG rendering is often more consistent on Mac
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
