@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/fonts.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <!-- <link rel="icon" href="./static/images/favicon.png"> -->
   <link rel="icon" type="image/svg+xml" href="./static/images/favicon.svg" />
@@ -122,21 +123,205 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <h2 class="title is-3"><center><tt>ReFORM</tt>: How to maintain support constraints in offline RL <i>without</i> any statistical distance regularization.</center></h2>
+      <h2 class="title is-3"><center>You no longer need to tune regularization weights!</center></h2>
       <div class="hero-body">
         <center>
           <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="videos/antmaze-large.mp4" alt="antmaze-large" type="video/mp4">
+            <source src="media/antmaze-large.mp4" alt="antmaze-large" type="video/mp4">
           </video>
           <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="videos/cube-single.mp4" alt="cube-single" type="video/mp4">
+            <source src="media/cube-single.mp4" alt="cube-single" type="video/mp4">
           </video>
           <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="videos/cube-double.mp4" alt="cube-double" type="video/mp4">
+            <source src="media/cube-double.mp4" alt="cube-double" type="video/mp4">
           </video>
           <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="videos/scene.mp4" alt="scene" type="video/mp4">
+            <source src="media/scene.mp4" alt="scene" type="video/mp4">
           </video>
         </center>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="column">
+      <div class="content">
+        <h2 class="title is-3">Overview</h2>
+        <ul>
+          <li>
+            <b><tt>ReFORM</tt></b> is an offline RL algorithm which utilizes flow-based policies to <b>enforce the support constraint by construction</b>, avoiding out-of-distribution errors <i>without constraining policy improvement</i>.
+          </li>
+          <li>
+            We propose applying <b>reflected flow</b> to generate constrained multimodal noise for the BC flow policy, thereby mitigating OOD errors while <b>maintaining the multimodal policy</b>. 
+          </li>
+          <li>
+            Extensive experiments on 40 challenging tasks with datasets of different qualities demonstrate that, with a <b>constant set of hyperparameters</b>, <tt>ReFORM</tt> dominates all baselines using flow policy structures with the <i>best hand-tuned hyperparameters</i> on the performance profile curve.
+          </li>
+        </ul>        
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="content">
+        <h2 class="title is-3">Challenges</h2>
+        <ul>
+          <li>
+            <b>Out of Distribution (OOD) problem</b> is a common challenge in offline RL, where the learned policy may generate actions outside the support of the behavior policy, leading to erroneous value estimates and poor performance.
+          </li>
+          <li>
+            Prior works attempt to address the OOD issue by keeping the learned policy close to the behavior policy (dataset) by <b>regularizing a statistical distance</b> to the behavior policy. However, this approach <i>constrains policy improvement</i> and may <i>not</i> fully prevent OOD actions. Also they often require <i>careful hyperparameter tuning</i> for different tasks and datasets.
+          </li>
+          <li>
+            While avoiding OOD errors, it is also important to maintain the <b>expressiveness of the policy</b>.
+          </li>
+        </ul>        
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="content">
+        <h2 class="title is-3">Method</h2>
+        <img src="media/reform.png"
+            class="center-image"
+            width="90%"
+            alt="algorithm structure"/>
+        <ul>
+          <li>
+            <tt>ReFORM</tt> starts by <b>learning a BC flow policy</b> (<span style="color: #AEAEAE">gray</span> arrows), which transforms a simple <i>bounded</i> source distribution \(q_\mathrm{BC}=\mathcal{U}(\mathcal B_l^d)\) (uniform distribution in \(d\)-dimensional hypersphere with radius \(l\)) to a target distribution \(p_\mathrm{BC}\) that matches the dataset \(\mathcal D\). The BC policy captures the support of the behavior policy due to the bounded source distribution, which allows us to enforce the <i>support constraint</i> in offline RL.
+          </li>
+          <li>
+            At the same time, <tt>ReFORM</tt> learns a <b>reflected flow-based noise generator</b> (<span style="color: #335E96">blue</span> arrows) that generate a <i>manipulated</i> source distribution \(\tilde q_\mathrm{BC}\) for the BC policy, such that the manipulated target distribution \(\tilde p_\mathrm{BC}\) maximizes the \(Q\) value while <i>staying inside the support</i> (<span style="color:  #C94D2E">red</span>) of the BC policy. This allows us to avoid OOD errors while maintaining policy expressiveness.
+          </li>
+        </ul>
+        <center>
+          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/toy/BC-Gaussian.png" alt="BC" width="100%"/>
+            <figcaption class="video-caption">
+              <tt>BC</tt>
+            </figcaption>
+          </figure>
+          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/toy/dsrl.png" alt="DSRL" width="100%"/>
+            <figcaption class="video-caption">
+              <tt>DSRL</tt>
+            </figcaption>
+          </figure>
+          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/toy/ifql.png" alt="IFQL" width="100%"/>
+            <figcaption class="video-caption">
+              <tt>IFQL</tt>
+            </figcaption>
+          </figure>
+          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/toy/fql-small.png" alt="FQL(S)" width="100%"/>
+            <figcaption class="video-caption">
+              <tt>FQL(S)</tt>
+            </figcaption>
+          </figure>
+          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/toy/fql-medium.png" alt="ReFORM" width="100%"/>
+            <figcaption class="video-caption">
+              <tt>FQL(M)</tt>
+            </figcaption>
+          </figure>
+          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/toy/fql-large.png" alt="FQL(L)" width="100%"/>
+            <figcaption class="video-caption">
+              <tt>FQL(L)</tt>
+            </figcaption>
+          </figure>
+          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/toy/reform.png" alt="ReFORM" width="100%"/>
+            <figcaption class="video-caption">
+              <tt>ReFORM</tt>
+            </figcaption>
+          </figure>
+        </center>
+        <ul>
+          <li>
+            Comparing with the baselines, only <tt>ReFORM</tt> is able to generate <b>multimodal actions</b> with <b>maximum Q values</b> while <b>staying within the support</b> (<span style="color:  #C94D2E">red</span>) of the BC policy. 
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="content">
+        <h2 class="title is-3">Experiments</h2>
+        <h3>Tasks</h3>
+        <center>
+          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
+            <video width="100%" autoplay muted loop controls>
+              <source src="media/antmaze-large.mp4" type="video/mp4">
+            </video>
+            <figcaption class="video-caption">
+              <p class="env-name">antmaze-large</p>
+            </figcaption>
+          </figure>
+          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
+            <video width="100%" autoplay muted loop controls>
+              <source src="media/cube-single.mp4" type="video/mp4">
+            </video>
+            <figcaption class="video-caption">
+              <p class="env-name">cube-single</p>
+            </figcaption>
+          </figure>
+          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
+            <video width="100%" autoplay muted loop controls>
+              <source src="media/cube-double.mp4" type="video/mp4">
+            </video>
+            <figcaption class="video-caption">
+              <p class="env-name">cube-double</p>
+            </figcaption>
+          </figure>
+          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
+            <video width="100%" autoplay muted loop controls>
+              <source src="media/scene.mp4" type="video/mp4">
+            </video>
+            <figcaption class="video-caption">
+              <p class="env-name">scene</p>
+            </figcaption>
+          </figure>
+        </center>
+        <ul>
+          <li>
+            We evaluate <tt>ReFORM</tt> and the baselines on 40 tasks from the <a href="https://seohong.me/projects/ogbench/">OGBench</a> offline RL benchmark designed in four environments, including locomotion tasks and manipulation tasks. 
+          </li>
+        </ul>
+        <center>
+          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/maze-navigate.png" alt="clean-dataset-antmaze" width="100%"/>
+            <figcaption class="video-caption">
+              <span class="dataset-name">clean</span> dataset for <span class="env-name">antmaze</span>
+            </figcaption>
+          </figure>
+          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
+            <img src="media/maze-explore.png" alt="noisy-dataset-antmaze" width="100%"/>
+            <figcaption class="video-caption">
+              <span class="dataset-name">noisy</span> dataset for <span class="env-name">antmaze</span>
+            </figcaption>
+          </figure>
+        </center>
+        <ul>
+          <li>
+            We use two kinds of datasets, <span class="dataset-name">clean</span> and <span class="dataset-name">noisy</span>. The <span class="dataset-name">clean</span> dataset consists of random environment trajectories generated by an expert policy. The <span class="dataset-name">noisy</span> dataset consists of random trajectories generated by a highly suboptimal and noisy policy. 
+          </li>
+          <li>
+            We define the <b>normalized score</b> for each task as the return normalized by the minimum and maximum returns across all algorithms.
+          </li>
+        </ul>      
+        <h3>Results</h3>
+        <img src="media/results/reward_performance_profile.png"
+            class="center-image"
+            width="90%"
+            alt="performance profile"/>
+        <ul>
+          <li>
+            For a given normalized score \(\tau\) (x-axis), the performance profile shows the probability that a given method achieves a score \(\geq\tau\). On the <span class="dataset-name">clean</span> dataset, <tt>ReFORM</tt> <b>achieves greater scores with higher probabilities than all other baselines</b>. The same is true on the <span class="dataset-name">noisy</span> dataset except for a small set of normalized scores around 0.9 where <tt>ReFORM</tt> and <tt>FQL(S)</tt> have similar probabilities within the statistical margins. Note that <tt>ReFORM</tt> uses <b>a constant set of hyperparameters for all tasks</b>, while all baselines use hand-tuned hyperparameters for each task.
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -172,23 +357,6 @@
     </div>
   </div>
 </section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="column"></div>
-    <h2 class="title is-3"><tt>ReFORM</tt>: Overall framework</h2>
-    <div class="column">
-      <div class="content">
-        <img src="figs/reform.png"
-          class="center-image"
-          width="90%"
-          alt="algorithm structure"/>
-      </div>
-    </div>
-  </div>
-</section>
-
 
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
