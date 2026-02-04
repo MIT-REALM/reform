@@ -322,6 +322,37 @@
             For a given normalized score \(\tau\) (x-axis), the performance profile shows the probability that a given method achieves a score \(\geq\tau\). On the <span class="dataset-name">clean</span> dataset, <tt>ReFORM</tt> <b>achieves greater scores with higher probabilities than all other baselines</b>. The same is true on the <span class="dataset-name">noisy</span> dataset except for a small set of normalized scores around 0.9 where <tt>ReFORM</tt> and <tt>FQL(S)</tt> have similar probabilities within the statistical margins. Note that <tt>ReFORM</tt> uses <b>a constant set of hyperparameters for all tasks</b>, while all baselines use hand-tuned hyperparameters for each task.
           </li>
         </ul>
+        <center>
+          <img src="media/results/antmaze-large-navigate_normalized_reward_boxplot.png"
+              width="24%"
+              alt="antmaze-large-navigate_normalized_reward_boxplot"/>
+          <img src="media/results/cube-single-play_normalized_reward_boxplot.png"
+              width="24%"
+              alt="cube-single-play_normalized_reward_boxplot"/>
+          <img src="media/results/cube-double-play_normalized_reward_boxplot.png"
+              width="24%"
+              alt="cube-double-play_normalized_reward_boxplot"/>
+          <img src="media/results/scene-play_normalized_reward_boxplot.png"
+              width="24%"
+              alt="scene-play_normalized_reward_boxplot"/>
+          <img src="media/results/antmaze-large-explore_normalized_reward_boxplot.png"
+              width="24%"
+              alt="antmaze-large-explore_normalized_reward_boxplot"/>
+          <img src="media/results/cube-single-noisy_normalized_reward_boxplot.png"
+              width="24%"
+              alt="cube-single-noisy_normalized_reward_boxplot"/>
+          <img src="media/results/cube-double-noisy_normalized_reward_boxplot.png"
+              width="24%"
+              alt="cube-double-noisy_normalized_reward_boxplot"/>
+          <img src="media/results/scene-noisy_normalized_reward_boxplot.png"
+              width="24%"
+              alt="scene-noisy_normalized_reward_boxplot"/>
+        </center>
+        <ul>
+          <li>
+            We present bar plots of the interquantile means (IQM) of the normalized scores for each algorithm in each environment with the <span class="dataset-name">clean</span> dataset (top row) and the <span class="dataset-name">noisy</span> dataset (bottom row). We can observe that <tt>ReFORM</tt> consistently achieves the best or comparable results in all environments with both datasets, with a constant set of hyperparameters. <tt>DSRL</tt> and <tt>FQL(M)</tt> generally perform the second and third best in environments with the <span class="dataset-name">clean</span> dataset. However, their performance drops when the <span class="dataset-name">noisy</span> dataset is used.
+          </li>
+        </ul>
       </div>
     </div>
   </div>
