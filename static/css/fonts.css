@@ -10,6 +10,8 @@
 .env-name {
     font-family: 'Latin Modern Mono', monospace !important;
     font-style: normal !important;
+    font-weight: normal !important;
+    text-transform: none !important;
 }
 
 .dataset-name {
