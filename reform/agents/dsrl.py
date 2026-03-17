@@ -184,7 +184,7 @@ class DSRLAgent(struct.PyTreeNode):
         )
         network.params[f'modules_target_{module_name}'] = new_target_params
 
-    def total_loss(self, batch: dict, params: Params, key: PRNGKey, step: int):
+    def total_loss(self, batch: dict, params: Params, key: PRNGKey):
         info = {}
         key, actor_key, critic_key = jr.split(key, 3)
 
