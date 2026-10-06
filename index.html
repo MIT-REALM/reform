@@ -1,452 +1,149 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description"
-        content="ReFORM">
-  <meta name="keywords" content="Offline reinforcement learning, Support constraint, Flow model">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ReFORM</title>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/fonts.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-  <!-- <link rel="icon" href="./static/images/favicon.png"> -->
-  <link rel="icon" type="image/svg+xml" href="./static/images/favicon.svg" />
-  <link rel="icon" type="image/png" href="./static/images/favicon.png" />
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <!-- <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script> -->
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/latin-modern-mono@5.0.0/index.css">
+  <title>ReFORM: Reflected Flows for On-support Offline RL via Noise Manipulation</title>
+  <meta name="description" content="ReFORM uses reflected flows to enforce support constraints in offline reinforcement learning via noise manipulation. ICLR 2026.">
+  <meta name="keywords" content="Offline reinforcement learning, Support constraint, Flow model">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/index.css">
+  <script src="static/js/index.js" defer></script>
   <script>
-    window.MathJax = {
-      options: {
-        enableMenu: false // Optional: keeps the UI clean
-      },
-      loader: {load: ['[tex]/ams']},
-      tex: {
-        packages: {'[+]': ['ams']}
-      },
-      svg: {
-        fontCache: 'global' // SVG rendering is often more consistent on Mac
-      }
-    };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    window.MathJax = { options: { enableMenu: false } };
+  </script>
+  <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a class="home-link" href="https://syzhang092218-source.github.io/" aria-label="Songyuan Zhang's homepage">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v11h5v-6h4v6h5V9"/></svg>
     </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://syzhang092218-source.github.io/">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://realm.mit.edu">
-            REALM Website
-          </a>
-        </div>
+    <details class="research-menu">
+      <summary>More Research <span aria-hidden="true">⌄</span></summary>
+      <div class="research-links">
+        <a href="https://mit-realm.github.io/laser/">LASER: Latent Space Adjoint Matching for Support-Constrained Entropy-Regularized Offline RL</a>
+        <a href="https://realm.mit.edu/">MIT REALM</a>
       </div>
-    </div>
-  </div>
-</nav>
+    </details>
+  </nav>
 
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">ReFORM: Reflected Flows for On-support Offline RL via Noise Manipulation</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://syzhang092218-source.github.io/">Songyuan Zhang</a><sup>1</sup>,</span>
-            <span class="author-block">
-              <a href="https://oswinso.xyz/">Oswin So</a><sup>1</sup>,</span>
-            <span class="author-block">
-              <a href="https://sabbirahmad26.github.io/">H. M. Sabbir Ahmad</a><sup>2</sup>,</span>
-            <span class="author-block">
-                <a href="https://ericyangyu.github.io/">Eric Yang Yu</a><sup>1</sup>,</span><br>
-            <span class="author-block">
-              <a href="https://www.linkedin.com/in/matthew-cleaveland-4775abba/">Matthew Cleaveland</a><sup>3</sup>,</span>
-            <span class="author-block">
-              <a href="https://www.blackmitchell.com/">Mitchell Black</a><sup>3</sup>,</span>
-            <span class="author-block">
-              <a href="http://chuchu.mit.edu/">Chuchu Fan</a><sup>1</sup></span>
-          </div>
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Massachusetts Institute of Technology &nbsp&nbsp&nbsp&nbsp<sup>2</sup>Boston University &nbsp&nbsp&nbsp&nbsp<sup>3</sup>MIT Lincoln Laboratory</span>
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://openreview.net/forum?id=YvFsyRReeN"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2602.05051"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                  </a>
-              </span>
-              <span class="link-block">
-                <a href="https://github.com/MIT-REALM/reform"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-            </div>
-          </div>
-        </div>
+  <main id="main">
+    <header class="publication-header container">
+      <h1><span class="title-line"><span class="method-name">ReFORM</span>: Reflected Flows for On-support</span> <span class="title-line">Offline RL via Noise Manipulation</span></h1>
+      <p class="venue">ICLR2026</p>
+      <div class="authors"> <span> <a href="https://syzhang092218-source.github.io/">Songyuan Zhang</a><sup>1</sup>,</span> <span> <a href="https://oswinso.xyz/">Oswin So</a><sup>1</sup>,</span> <span> <a href="https://sabbirahmad26.github.io/">H. M. Sabbir Ahmad</a><sup>2</sup>,</span> <span> <a href="https://ericyangyu.github.io/">Eric Yang Yu</a><sup>1</sup>,</span> <span> <a href="https://www.linkedin.com/in/matthew-cleaveland-4775abba/">Matthew Cleaveland</a><sup>3</sup>,</span> <span> <a href="https://www.blackmitchell.com/">Mitchell Black</a><sup>3</sup>,</span> <span> <a href="http://chuchu.mit.edu/">Chuchu Fan</a><sup>1</sup></span> </div>
+      <p class="affiliations"><span><sup>1</sup>Massachusetts Institute of Technology</span><span><sup>2</sup>Boston University</span><span><sup>3</sup>MIT Lincoln Laboratory</span></p>
+      <div class="publication-links">
+        <a class="pill" href="https://openreview.net/forum?id=YvFsyRReeN"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg>Paper</a>
+        <a class="pill" href="https://arxiv.org/abs/2602.05051"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v18H7zM10 8h4M10 12h4M10 16h4"/></svg>arXiv</a>
+        <a class="pill" href="https://github.com/MIT-REALM/reform"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-13-2 16"/></svg>Code</a>
+        <a class="pill" href="#BibTeX"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H4v8h5V5Zm0 8c0 4-2 6-5 6M20 5h-5v8h5V5Zm0 8c0 4-2 6-5 6"/></svg>BibTeX</a>
       </div>
-    </div>
-  </div>
-</section>
+      <p class="publication-update"><strong>Update:</strong> Check out <a href="https://github.com/MIT-REALM/laser">LASER</a>, an improved version of ReFORM with <em>explicit latent entropy regularization</em>.</p>
+    </header>
 
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="title is-3"><center><tt>ReFORM</tt>: How to maintain support constraints in offline RL <i>without</i> any statistical distance regularization.</center></h2>
-      <h2 class="title is-3"><center>You no longer need to tune regularization weights!</center></h2>
-      <div class="hero-body">
-        <center>
-          <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="media/antmaze-large.mp4" alt="antmaze-large" type="video/mp4">
+    <section class="teaser container" aria-labelledby="teaser-title">
+      <h2 id="teaser-title">ReFORM: How to maintain support constraints in offline RL <i>without</i> any statistical distance regularization.</h2>
+      <h2>You no longer need to tune regularization weights!</h2>
+      <div id="demos"><div class="demo-gallery" role="group" aria-label="ReFORM policy demonstrations">
+<figure class="demo-video">
+          <video width="720" height="480" controls muted loop playsinline preload="metadata" poster="media/posters/antmaze-large.jpg" aria-labelledby="demo-antmaze-large">
+            <source src="media/antmaze-large.mp4" type="video/mp4">
+            Your browser does not support embedded video. <a href="media/antmaze-large.mp4">Download the AntMaze-large video</a>.
           </video>
-          <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="media/cube-single.mp4" alt="cube-single" type="video/mp4">
+          <figcaption id="demo-antmaze-large">AntMaze-large</figcaption>
+        </figure>
+<figure class="demo-video">
+          <video width="720" height="480" controls muted loop playsinline preload="metadata" poster="media/posters/cube-single.jpg" aria-labelledby="demo-cube-single">
+            <source src="media/cube-single.mp4" type="video/mp4">
+            Your browser does not support embedded video. <a href="media/cube-single.mp4">Download the Cube-single video</a>.
           </video>
-          <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="media/cube-double.mp4" alt="cube-double" type="video/mp4">
+          <figcaption id="demo-cube-single">Cube-single</figcaption>
+        </figure>
+<figure class="demo-video">
+          <video width="720" height="480" controls muted loop playsinline preload="metadata" poster="media/posters/cube-double.jpg" aria-labelledby="demo-cube-double">
+            <source src="media/cube-double.mp4" type="video/mp4">
+            Your browser does not support embedded video. <a href="media/cube-double.mp4">Download the Cube-double video</a>.
           </video>
-          <video width="24%" autoplay="" muted="" loop="" controls>
-            <source src="media/scene.mp4" alt="scene" type="video/mp4">
+          <figcaption id="demo-cube-double">Cube-double</figcaption>
+        </figure>
+<figure class="demo-video">
+          <video width="720" height="480" controls muted loop playsinline preload="metadata" poster="media/posters/scene.jpg" aria-labelledby="demo-scene">
+            <source src="media/scene.mp4" type="video/mp4">
+            Your browser does not support embedded video. <a href="media/scene.mp4">Download the Scene video</a>.
           </video>
-        </center>
-      </div>
-    </div>
-  </div>
-</section>
+          <figcaption id="demo-scene">Scene</figcaption>
+        </figure>
+      </div></div>
+      <p class="demo-caption">ReFORM policies on four OGBench environments.</p>
+      <nav class="section-links" aria-label="On this page">
+        <a href="#demos">Videos</a><a href="#overview">Overview</a><a href="#challenges">Challenges</a><a href="#method">Method</a><a href="#experiments">Experiments</a><a href="#abstract">Abstract</a>
+      </nav>
+    </section>
 
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="column">
-      <div class="content">
-        <h2 class="title is-3">Overview</h2>
-        <ul>
-          <li>
-            <b><tt>ReFORM</tt></b> is an offline RL algorithm which utilizes flow-based policies to <b>enforce the support constraint by construction</b>, avoiding out-of-distribution errors <i>without constraining policy improvement</i>.
-          </li>
-          <li>
-            We propose applying <b>reflected flow</b> to generate constrained multimodal noise for the BC flow policy, thereby mitigating OOD errors while <b>maintaining the multimodal policy</b>. 
-          </li>
-          <li>
-            Extensive experiments on 40 challenging tasks with datasets of different qualities demonstrate that, with a <b>constant set of hyperparameters</b>, <tt>ReFORM</tt> dominates all baselines using flow policy structures with the <i>best hand-tuned hyperparameters</i> on the performance profile curve.
-          </li>
-        </ul>        
-      </div>
-    </div>
+    <section id="overview" class="section container">
+      <h2>Overview</h2>
+      <ul class="overview-list"> <li> <b>ReFORM</b> is an offline RL algorithm which utilizes flow-based policies to <b>enforce the support constraint by construction</b>, avoiding out-of-distribution errors <i>without constraining policy improvement</i>. </li> <li> We propose applying <b>reflected flow</b> to generate constrained multimodal noise for the BC flow policy, thereby mitigating OOD errors while <b>maintaining the multimodal policy</b>. </li> <li> Extensive experiments on 40 challenging tasks with datasets of different qualities demonstrate that, with a <b>constant set of hyperparameters</b>, ReFORM dominates all baselines using flow policy structures with the <i>best hand-tuned hyperparameters</i> on the performance profile curve. </li> </ul>
+    </section>
+    <section id="challenges" class="section container">
+      <h2>Challenges</h2>
+      <ul class="overview-list"> <li> <b>Out of Distribution (OOD) problem</b> is a common challenge in offline RL, where the learned policy may generate actions outside the support of the behavior policy, leading to erroneous value estimates and poor performance. </li> <li> Prior works attempt to address the OOD issue by keeping the learned policy close to the behavior policy (dataset) by <b>regularizing a statistical distance</b> to the behavior policy. However, this approach <i>constrains policy improvement</i> and may <i>not</i> fully prevent OOD actions. Also they often require <i>careful hyperparameter tuning</i> for different tasks and datasets. </li> <li> While avoiding OOD errors, it is also important to maintain the <b>expressiveness of the policy</b>. </li> </ul>
+    </section>
+    <section id="method" class="section container">
+      <h2>Method</h2>
+      <figure><a aria-label="Enlarge ReFORM algorithm structure" class="figure-link" data-zoom="" href="media/reform.png"><img alt="ReFORM algorithm structure" height="946" loading="lazy" src="media/reform.png" width="2403"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a></figure>
+      <ul class="overview-list"> <li> ReFORM starts by <b>learning a BC flow policy</b> (<span style="color: #AEAEAE">gray</span> arrows), which transforms a simple <i>bounded</i> source distribution \(q_\mathrm{BC}=\mathcal{U}(\mathcal B_l^d)\) (uniform distribution in \(d\)-dimensional hypersphere with radius \(l\)) to a target distribution \(p_\mathrm{BC}\) that matches the dataset \(\mathcal D\). The BC policy captures the support of the behavior policy due to the bounded source distribution, which allows us to enforce the <i>support constraint</i> in offline RL. </li> <li> At the same time, ReFORM learns a <b>reflected flow-based noise generator</b> (<span style="color: #335E96">blue</span> arrows) that generate a <i>manipulated</i> source distribution \(\tilde q_\mathrm{BC}\) for the BC policy, such that the manipulated target distribution \(\tilde p_\mathrm{BC}\) maximizes the \(Q\) value while <i>staying inside the support</i> (<span style="color: #C94D2E">red</span>) of the BC policy. This allows us to avoid OOD errors while maintaining policy expressiveness. </li> </ul>
+      <div class="comparison-grid"> <figure> <a aria-label="Enlarge BC policy distribution" class="figure-link" data-zoom="" href="media/toy/BC-Gaussian.png"><img alt="BC policy distribution" height="1000" loading="lazy" src="media/toy/BC-Gaussian.png" width="1000"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> BC </figcaption> </figure> <figure> <a aria-label="Enlarge DSRL policy distribution" class="figure-link" data-zoom="" href="media/toy/dsrl.png"><img alt="DSRL policy distribution" height="1024" loading="lazy" src="media/toy/dsrl.png" width="1024"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> DSRL </figcaption> </figure> <figure> <a aria-label="Enlarge IFQL policy distribution" class="figure-link" data-zoom="" href="media/toy/ifql.png"><img alt="IFQL policy distribution" height="1000" loading="lazy" src="media/toy/ifql.png" width="1000"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> IFQL </figcaption> </figure> <figure> <a aria-label="Enlarge FQL(S) policy distribution" class="figure-link" data-zoom="" href="media/toy/fql-small.png"><img alt="FQL(S) policy distribution" height="1000" loading="lazy" src="media/toy/fql-small.png" width="1000"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> FQL(S) </figcaption> </figure> <figure> <a aria-label="Enlarge FQL(M) policy distribution" class="figure-link" data-zoom="" href="media/toy/fql-medium.png"><img alt="FQL(M) policy distribution" height="1000" loading="lazy" src="media/toy/fql-medium.png" width="1000"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> FQL(M) </figcaption> </figure> <figure> <a aria-label="Enlarge FQL(L) policy distribution" class="figure-link" data-zoom="" href="media/toy/fql-large.png"><img alt="FQL(L) policy distribution" height="1000" loading="lazy" src="media/toy/fql-large.png" width="1000"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> FQL(L) </figcaption> </figure> <figure> <a aria-label="Enlarge ReFORM policy distribution" class="figure-link" data-zoom="" href="media/toy/reform.png"><img alt="ReFORM policy distribution" height="1024" loading="lazy" src="media/toy/reform.png" width="1024"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> ReFORM </figcaption> </figure> </div>
+      <ul class="overview-list"> <li> Comparing with the baselines, only ReFORM is able to generate <b>multimodal actions</b> with <b>maximum Q values</b> while <b>staying within the support</b> (<span style="color: #C94D2E">red</span>) of the BC policy. </li> </ul>
+    </section>
+    <section id="experiments" class="section container">
+      <h2>Experiments</h2>
+      <h3 class="subsection-title">Tasks</h3>
+      <div aria-label="ReFORM policy demonstrations" class="demo-gallery" role="group"> <figure class="demo-video"> <video aria-labelledby="task-antmaze-large" controls="" height="480" loop="" muted="" playsinline="" poster="media/posters/antmaze-large.jpg" preload="metadata" width="720"> <source src="media/antmaze-large.mp4" type="video/mp4"/> Your browser does not support embedded video. <a href="media/antmaze-large.mp4">Download the AntMaze-large video</a>. </video> <figcaption id="task-antmaze-large">AntMaze-large</figcaption> </figure> <figure class="demo-video"> <video aria-labelledby="task-cube-single" controls="" height="480" loop="" muted="" playsinline="" poster="media/posters/cube-single.jpg" preload="metadata" width="720"> <source src="media/cube-single.mp4" type="video/mp4"/> Your browser does not support embedded video. <a href="media/cube-single.mp4">Download the Cube-single video</a>. </video> <figcaption id="task-cube-single">Cube-single</figcaption> </figure> <figure class="demo-video"> <video aria-labelledby="task-cube-double" controls="" height="480" loop="" muted="" playsinline="" poster="media/posters/cube-double.jpg" preload="metadata" width="720"> <source src="media/cube-double.mp4" type="video/mp4"/> Your browser does not support embedded video. <a href="media/cube-double.mp4">Download the Cube-double video</a>. </video> <figcaption id="task-cube-double">Cube-double</figcaption> </figure> <figure class="demo-video"> <video aria-labelledby="task-scene" controls="" height="480" loop="" muted="" playsinline="" poster="media/posters/scene.jpg" preload="metadata" width="720"> <source src="media/scene.mp4" type="video/mp4"/> Your browser does not support embedded video. <a href="media/scene.mp4">Download the Scene video</a>. </video> <figcaption id="task-scene">Scene</figcaption> </figure> </div>
+      <ul class="overview-list"> <li> We evaluate ReFORM and the baselines on 40 tasks from the <a href="https://seohong.me/projects/ogbench/">OGBench</a> offline RL benchmark designed in four environments, including locomotion tasks and manipulation tasks. </li> </ul>
+      <div class="dataset-grid"> <figure> <a aria-label="Enlarge clean dataset for antmaze" class="figure-link" data-zoom="" href="media/maze-navigate.png"><img alt="clean dataset for antmaze" height="3078" loading="lazy" src="media/maze-navigate.png" width="4070"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> <span>clean</span> dataset for <span>antmaze</span> </figcaption> </figure> <figure> <a aria-label="Enlarge noisy dataset for antmaze" class="figure-link" data-zoom="" href="media/maze-explore.png"><img alt="noisy dataset for antmaze" height="3078" loading="lazy" src="media/maze-explore.png" width="4070"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a> <figcaption> <span>noisy</span> dataset for <span>antmaze</span> </figcaption> </figure> </div>
+      <ul class="overview-list"> <li> We use two kinds of datasets, <span>clean</span> and <span>noisy</span>. The <span>clean</span> dataset consists of random environment trajectories generated by an expert policy. The <span>noisy</span> dataset consists of random trajectories generated by a highly suboptimal and noisy policy. </li> <li> We define the <b>normalized score</b> for each task as the return normalized by the minimum and maximum returns across all algorithms. </li> </ul>
+      <h3 class="subsection-title">Results</h3>
+      <figure><a aria-label="Enlarge ReFORM performance profiles on clean and noisy datasets" class="figure-link" data-zoom="" href="media/results/reward_performance_profile.png"><img alt="ReFORM performance profiles on clean and noisy datasets" height="2188" loading="lazy" src="media/results/reward_performance_profile.png" width="7858"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a></figure>
+      <ul class="overview-list"> <li> For a given normalized score \(\tau\) (x-axis), the performance profile shows the probability that a given method achieves a score \(\geq\tau\). On the <span>clean</span> dataset, ReFORM <b>achieves greater scores with higher probabilities than all other baselines</b>. The same is true on the <span>noisy</span> dataset except for a small set of normalized scores around 0.9 where ReFORM and FQL(S) have similar probabilities within the statistical margins. Note that ReFORM uses <b>a constant set of hyperparameters for all tasks</b>, while all baselines use hand-tuned hyperparameters for each task. </li> </ul>
+      <div class="results-grid"> <figure><a aria-label="Enlarge AntMaze, clean dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/antmaze-large-navigate_normalized_reward_boxplot.png"><img alt="AntMaze, clean dataset: normalized rewards" height="1202" loading="lazy" src="media/results/antmaze-large-navigate_normalized_reward_boxplot.png" width="1662"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>AntMaze · clean dataset</figcaption></figure> <figure><a aria-label="Enlarge Cube-single, clean dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/cube-single-play_normalized_reward_boxplot.png"><img alt="Cube-single, clean dataset: normalized rewards" height="1202" loading="lazy" src="media/results/cube-single-play_normalized_reward_boxplot.png" width="1666"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>Cube-single · clean dataset</figcaption></figure> <figure><a aria-label="Enlarge Cube-double, clean dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/cube-double-play_normalized_reward_boxplot.png"><img alt="Cube-double, clean dataset: normalized rewards" height="1202" loading="lazy" src="media/results/cube-double-play_normalized_reward_boxplot.png" width="1675"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>Cube-double · clean dataset</figcaption></figure> <figure><a aria-label="Enlarge Scene, clean dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/scene-play_normalized_reward_boxplot.png"><img alt="Scene, clean dataset: normalized rewards" height="1202" loading="lazy" src="media/results/scene-play_normalized_reward_boxplot.png" width="1672"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>Scene · clean dataset</figcaption></figure> <figure><a aria-label="Enlarge AntMaze, noisy dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/antmaze-large-explore_normalized_reward_boxplot.png"><img alt="AntMaze, noisy dataset: normalized rewards" height="1202" loading="lazy" src="media/results/antmaze-large-explore_normalized_reward_boxplot.png" width="1718"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>AntMaze · noisy dataset</figcaption></figure> <figure><a aria-label="Enlarge Cube-single, noisy dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/cube-single-noisy_normalized_reward_boxplot.png"><img alt="Cube-single, noisy dataset: normalized rewards" height="1202" loading="lazy" src="media/results/cube-single-noisy_normalized_reward_boxplot.png" width="1662"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>Cube-single · noisy dataset</figcaption></figure> <figure><a aria-label="Enlarge Cube-double, noisy dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/cube-double-noisy_normalized_reward_boxplot.png"><img alt="Cube-double, noisy dataset: normalized rewards" height="1202" loading="lazy" src="media/results/cube-double-noisy_normalized_reward_boxplot.png" width="1683"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>Cube-double · noisy dataset</figcaption></figure> <figure><a aria-label="Enlarge Scene, noisy dataset: normalized rewards" class="figure-link" data-zoom="" href="media/results/scene-noisy_normalized_reward_boxplot.png"><img alt="Scene, noisy dataset: normalized rewards" height="1202" loading="lazy" src="media/results/scene-noisy_normalized_reward_boxplot.png" width="1663"/><span aria-hidden="true" class="zoom-hint">↗ Enlarge</span></a><figcaption>Scene · noisy dataset</figcaption></figure> </div>
+      <ul class="overview-list"> <li> We present bar plots of the interquantile means (IQM) of the normalized scores for each algorithm in each environment with the <span>clean</span> dataset (top row) and the <span>noisy</span> dataset (bottom row). We can observe that ReFORM consistently achieves the best or comparable results in all environments with both datasets, with a constant set of hyperparameters. DSRL and FQL(M) generally perform the second and third best in environments with the <span>clean</span> dataset. However, their performance drops when the <span>noisy</span> dataset is used. </li> </ul>
+    </section>
 
-    <div class="column">
-      <div class="content">
-        <h2 class="title is-3">Challenges</h2>
-        <ul>
-          <li>
-            <b>Out of Distribution (OOD) problem</b> is a common challenge in offline RL, where the learned policy may generate actions outside the support of the behavior policy, leading to erroneous value estimates and poor performance.
-          </li>
-          <li>
-            Prior works attempt to address the OOD issue by keeping the learned policy close to the behavior policy (dataset) by <b>regularizing a statistical distance</b> to the behavior policy. However, this approach <i>constrains policy improvement</i> and may <i>not</i> fully prevent OOD actions. Also they often require <i>careful hyperparameter tuning</i> for different tasks and datasets.
-          </li>
-          <li>
-            While avoiding OOD errors, it is also important to maintain the <b>expressiveness of the policy</b>.
-          </li>
-        </ul>        
+    <section id="abstract" class="section section-tinted">
+      <div class="container abstract-content">
+        <h2>Abstract</h2>
+        <p> Offline reinforcement learning (RL) aims to learn the optimal policy from a fixed behavior policy dataset without additional environment interactions. One common challenge that arises in this setting is the out-of-distribution (OOD) error, which occurs when the policy leaves the training distribution. Prior methods penalize a statistical distance term to keep the policy close to the behavior policy, but this constrains policy improvement and may not completely prevent OOD actions. Another challenge is that the optimal policy distribution can be multimodal and difficult to represent. Recent works apply diffusion or flow policies to address this problem, but it is unclear how to avoid OOD errors while retaining policy expressiveness. We propose ReFORM, an offline RL method based on flow policies that enforces the less restrictive <i>support constraint</i> by construction. ReFORM learns a behavior cloning (BC) flow policy with a bounded source distribution to capture the support of the action distribution, then optimizes a reflected flow that generates bounded noise for the BC flow while keeping the support, to maximize the performance. Across 40 challenging tasks from the OGBench benchmark with datasets of varying quality and using a <i>constant</i> set of hyperparameters for all tasks, ReFORM dominates all baselines with <i>hand-tuned</i> hyperparameters on the performance profile curves. </p>
       </div>
-    </div>
+    </section>
 
-    <div class="column">
-      <div class="content">
-        <h2 class="title is-3">Method</h2>
-        <img src="media/reform.png"
-            class="center-image"
-            width="90%"
-            alt="algorithm structure"/>
-        <ul>
-          <li>
-            <tt>ReFORM</tt> starts by <b>learning a BC flow policy</b> (<span style="color: #AEAEAE">gray</span> arrows), which transforms a simple <i>bounded</i> source distribution \(q_\mathrm{BC}=\mathcal{U}(\mathcal B_l^d)\) (uniform distribution in \(d\)-dimensional hypersphere with radius \(l\)) to a target distribution \(p_\mathrm{BC}\) that matches the dataset \(\mathcal D\). The BC policy captures the support of the behavior policy due to the bounded source distribution, which allows us to enforce the <i>support constraint</i> in offline RL.
-          </li>
-          <li>
-            At the same time, <tt>ReFORM</tt> learns a <b>reflected flow-based noise generator</b> (<span style="color: #335E96">blue</span> arrows) that generate a <i>manipulated</i> source distribution \(\tilde q_\mathrm{BC}\) for the BC policy, such that the manipulated target distribution \(\tilde p_\mathrm{BC}\) maximizes the \(Q\) value while <i>staying inside the support</i> (<span style="color:  #C94D2E">red</span>) of the BC policy. This allows us to avoid OOD errors while maintaining policy expressiveness.
-          </li>
-        </ul>
-        <center>
-          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/toy/BC-Gaussian.png" alt="BC" width="100%"/>
-            <figcaption class="video-caption">
-              <tt>BC</tt>
-            </figcaption>
-          </figure>
-          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/toy/dsrl.png" alt="DSRL" width="100%"/>
-            <figcaption class="video-caption">
-              <tt>DSRL</tt>
-            </figcaption>
-          </figure>
-          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/toy/ifql.png" alt="IFQL" width="100%"/>
-            <figcaption class="video-caption">
-              <tt>IFQL</tt>
-            </figcaption>
-          </figure>
-          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/toy/fql-small.png" alt="FQL(S)" width="100%"/>
-            <figcaption class="video-caption">
-              <tt>FQL(S)</tt>
-            </figcaption>
-          </figure>
-          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/toy/fql-medium.png" alt="ReFORM" width="100%"/>
-            <figcaption class="video-caption">
-              <tt>FQL(M)</tt>
-            </figcaption>
-          </figure>
-          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/toy/fql-large.png" alt="FQL(L)" width="100%"/>
-            <figcaption class="video-caption">
-              <tt>FQL(L)</tt>
-            </figcaption>
-          </figure>
-          <figure style="width: 13%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/toy/reform.png" alt="ReFORM" width="100%"/>
-            <figcaption class="video-caption">
-              <tt>ReFORM</tt>
-            </figcaption>
-          </figure>
-        </center>
-        <ul>
-          <li>
-            Comparing with the baselines, only <tt>ReFORM</tt> is able to generate <b>multimodal actions</b> with <b>maximum Q values</b> while <b>staying within the support</b> (<span style="color:  #C94D2E">red</span>) of the BC policy. 
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="column">
-      <div class="content">
-        <h2 class="title is-3">Experiments</h2>
-        <h3>Tasks</h3>
-        <center>
-          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
-            <video width="100%" autoplay muted loop controls>
-              <source src="media/antmaze-large.mp4" type="video/mp4">
-            </video>
-            <figcaption class="video-caption">
-              <p class="env-name">antmaze-large</p>
-            </figcaption>
-          </figure>
-          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
-            <video width="100%" autoplay muted loop controls>
-              <source src="media/cube-single.mp4" type="video/mp4">
-            </video>
-            <figcaption class="video-caption">
-              <p class="env-name">cube-single</p>
-            </figcaption>
-          </figure>
-          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
-            <video width="100%" autoplay muted loop controls>
-              <source src="media/cube-double.mp4" type="video/mp4">
-            </video>
-            <figcaption class="video-caption">
-              <p class="env-name">cube-double</p>
-            </figcaption>
-          </figure>
-          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
-            <video width="100%" autoplay muted loop controls>
-              <source src="media/scene.mp4" type="video/mp4">
-            </video>
-            <figcaption class="video-caption">
-              <p class="env-name">scene</p>
-            </figcaption>
-          </figure>
-        </center>
-        <ul>
-          <li>
-            We evaluate <tt>ReFORM</tt> and the baselines on 40 tasks from the <a href="https://seohong.me/projects/ogbench/">OGBench</a> offline RL benchmark designed in four environments, including locomotion tasks and manipulation tasks. 
-          </li>
-        </ul>
-        <center>
-          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/maze-navigate.png" alt="clean-dataset-antmaze" width="100%"/>
-            <figcaption class="video-caption">
-              <span class="dataset-name">clean</span> dataset for <span class="env-name">antmaze</span>
-            </figcaption>
-          </figure>
-          <figure style="width: 24%; display: inline-block; vertical-align: top; margin: 0;">
-            <img src="media/maze-explore.png" alt="noisy-dataset-antmaze" width="100%"/>
-            <figcaption class="video-caption">
-              <span class="dataset-name">noisy</span> dataset for <span class="env-name">antmaze</span>
-            </figcaption>
-          </figure>
-        </center>
-        <ul>
-          <li>
-            We use two kinds of datasets, <span class="dataset-name">clean</span> and <span class="dataset-name">noisy</span>. The <span class="dataset-name">clean</span> dataset consists of random environment trajectories generated by an expert policy. The <span class="dataset-name">noisy</span> dataset consists of random trajectories generated by a highly suboptimal and noisy policy. 
-          </li>
-          <li>
-            We define the <b>normalized score</b> for each task as the return normalized by the minimum and maximum returns across all algorithms.
-          </li>
-        </ul>      
-        <h3>Results</h3>
-        <img src="media/results/reward_performance_profile.png"
-            class="center-image"
-            width="90%"
-            alt="performance profile"/>
-        <ul>
-          <li>
-            For a given normalized score \(\tau\) (x-axis), the performance profile shows the probability that a given method achieves a score \(\geq\tau\). On the <span class="dataset-name">clean</span> dataset, <tt>ReFORM</tt> <b>achieves greater scores with higher probabilities than all other baselines</b>. The same is true on the <span class="dataset-name">noisy</span> dataset except for a small set of normalized scores around 0.9 where <tt>ReFORM</tt> and <tt>FQL(S)</tt> have similar probabilities within the statistical margins. Note that <tt>ReFORM</tt> uses <b>a constant set of hyperparameters for all tasks</b>, while all baselines use hand-tuned hyperparameters for each task.
-          </li>
-        </ul>
-        <center>
-          <img src="media/results/antmaze-large-navigate_normalized_reward_boxplot.png"
-              width="24%"
-              alt="antmaze-large-navigate_normalized_reward_boxplot"/>
-          <img src="media/results/cube-single-play_normalized_reward_boxplot.png"
-              width="24%"
-              alt="cube-single-play_normalized_reward_boxplot"/>
-          <img src="media/results/cube-double-play_normalized_reward_boxplot.png"
-              width="24%"
-              alt="cube-double-play_normalized_reward_boxplot"/>
-          <img src="media/results/scene-play_normalized_reward_boxplot.png"
-              width="24%"
-              alt="scene-play_normalized_reward_boxplot"/>
-          <img src="media/results/antmaze-large-explore_normalized_reward_boxplot.png"
-              width="24%"
-              alt="antmaze-large-explore_normalized_reward_boxplot"/>
-          <img src="media/results/cube-single-noisy_normalized_reward_boxplot.png"
-              width="24%"
-              alt="cube-single-noisy_normalized_reward_boxplot"/>
-          <img src="media/results/cube-double-noisy_normalized_reward_boxplot.png"
-              width="24%"
-              alt="cube-double-noisy_normalized_reward_boxplot"/>
-          <img src="media/results/scene-noisy_normalized_reward_boxplot.png"
-              width="24%"
-              alt="scene-noisy_normalized_reward_boxplot"/>
-        </center>
-        <ul>
-          <li>
-            We present bar plots of the interquantile means (IQM) of the normalized scores for each algorithm in each environment with the <span class="dataset-name">clean</span> dataset (top row) and the <span class="dataset-name">noisy</span> dataset (bottom row). We can observe that <tt>ReFORM</tt> consistently achieves the best or comparable results in all environments with both datasets, with a constant set of hyperparameters. <tt>DSRL</tt> and <tt>FQL(M)</tt> generally perform the second and third best in environments with the <span class="dataset-name">clean</span> dataset. However, their performance drops when the <span class="dataset-name">noisy</span> dataset is used.
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            Offline reinforcement learning (RL) aims to learn the optimal policy from a fixed
-            behavior policy dataset without additional environment interactions. One common 
-            challenge that arises in this setting is the out-of-distribution (OOD) error,
-            which occurs when the policy leaves the training distribution. Prior methods penalize
-             a statistical distance term to keep the policy close to the behavior policy, but
-            this constrains policy improvement and may not completely prevent OOD actions.
-            Another challenge is that the optimal policy distribution can be multimodal and
-            difficult to represent. Recent works apply diffusion or flow policies to address this
-            problem, but it is unclear how to avoid OOD errors while retaining policy expressiveness. 
-            We propose <tt>ReFORM</tt>, an offline RL method based on flow policies that
-            enforces the less restrictive <i>support constraint</i> by construction. <tt>ReFORM</tt> learns a
-            behavior cloning (BC) flow policy with a bounded source distribution to capture the support of the
-            action distribution, then optimizes a reflected flow that generates bounded noise
-            for the BC flow while keeping the support, to maximize the performance. Across
-            40 challenging tasks from the OGBench benchmark with datasets of varying quality 
-            and using a <i>constant</i> set of hyperparameters for all tasks, <tt>ReFORM</tt> dominates
-            all baselines with <i>hand-tuned</i> hyperparameters on the performance profile curves.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@inproceedings{zhang2026reform,
-      title={Re{FORM}: Reflected Flows for On-support Offline {RL} via Noise Manipulation},
-      author={Zhang, Songyuan and So, Oswin and Ahmad, H M Sabbir and Yu, Eric Yang and Cleaveland, Matthew and Black, Mitchell and Fan, Chuchu},
-      booktitle={The Fourteenth International Conference on Learning Representations},
-      year={2026},
+    <section id="BibTeX" class="section container">
+      <div class="citation-heading"><h2>BibTeX</h2><button id="copy-bibtex" class="copy-button" type="button" hidden>Copy BibTeX</button></div>
+      <pre><code id="citation">@inproceedings{zhang2026reform,
+  title={Re{FORM}: Reflected Flows for On-support Offline {RL} via Noise Manipulation},
+  author={Zhang, Songyuan and So, Oswin and Ahmad, H M Sabbir and Yu, Eric Yang and Cleaveland, Matthew and Black, Mitchell and Fan, Chuchu},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
 }</code></pre>
-  </div>
-</section>
+      <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
 
-
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
+  <footer class="site-footer">
+    <div class="container">
+      <p><a href="https://realm.mit.edu/">MIT REALM</a> · <a href="https://www.ll.mit.edu/">MIT Lincoln Laboratory</a></p>
+      <p> This website is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">Creative Commons Attribution-ShareAlike 4.0 International License</a>. This webpage template is based that used by <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. We sincerely thank <a href="https://keunhong.com/">Keunhong Park</a> for developing and open-sourcing this template. </p>
+      <a class="back-to-top" href="#main">Back to top ↑</a>
     </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-            This webpage template is based that used by <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. 
-            We sincerely thank <a href="https://keunhong.com/">Keunhong Park</a> for developing and open-sourcing this template.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
+  </footer>
 
-
+  <dialog aria-label="Enlarged figure" id="figure-dialog">
+<div class="dialog-toolbar"><span id="figure-title">Figure</span><button aria-label="Close enlarged figure" id="close-figure" type="button">Close ×</button></div>
+<img alt="" id="dialog-image"/>
+<p class="dialog-note">Scroll to inspect the full figure. Press Esc or Close to return.</p>
+</dialog>
 </body>
 </html>

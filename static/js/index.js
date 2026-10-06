@@ -1,78 +1,79 @@
-window.HELP_IMPROVE_VIDEOJS = false;
+'use strict';
 
-var INTERP_BASE = "https://homes.cs.washington.edu/~kpar/nerfies/interpolation/stacked";
-var NUM_INTERP_FRAMES = 240;
+// Every figure remains a normal image link when JavaScript is unavailable.
+const figureDialog = document.querySelector('#figure-dialog');
+const dialogImage = document.querySelector('#dialog-image');
+const dialogTitle = document.querySelector('#figure-title');
+if (figureDialog && typeof figureDialog.showModal === 'function') {
+  document.querySelectorAll('[data-zoom]').forEach(link => {
+    link.addEventListener('click', event => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      const source = link.querySelector('img');
+      dialogImage.src = link.href;
+      dialogImage.alt = source.alt;
+      dialogTitle.textContent = link.getAttribute('aria-label');
+      figureDialog.showModal();
+      figureDialog.scrollTop = 0;
+      figureDialog.scrollLeft = 0;
+      document.body.classList.add('dialog-open');
+    });
+  });
+  document.querySelector('#close-figure').addEventListener('click', () => figureDialog.close());
+  figureDialog.addEventListener('click', event => {
+    if (event.target !== figureDialog) return;
+    const bounds = figureDialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) figureDialog.close();
+  });
+  figureDialog.addEventListener('close', () => document.body.classList.remove('dialog-open'));
+}
 
-var interp_images = [];
-function preloadInterpolationImages() {
-  for (var i = 0; i < NUM_INTERP_FRAMES; i++) {
-    var path = INTERP_BASE + '/' + String(i).padStart(6, '0') + '.jpg';
-    interp_images[i] = new Image();
-    interp_images[i].src = path;
+const copyButton = document.querySelector('#copy-bibtex');
+const citation = document.querySelector('#citation');
+const copyStatus = document.querySelector('#copy-status');
+copyButton.hidden = false;
+copyButton.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(citation.textContent);
+    copyButton.textContent = 'Copied!';
+    copyStatus.textContent = 'BibTeX copied to clipboard.';
+    setTimeout(() => { copyButton.textContent = 'Copy BibTeX'; }, 2500);
+  } catch {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(citation);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    copyStatus.textContent = 'Citation selected. Press Ctrl+C (or ⌘C on Mac) to copy.';
   }
+});
+
+const researchMenu = document.querySelector('.research-menu');
+document.addEventListener('click', event => {
+  if (!researchMenu.contains(event.target)) researchMenu.open = false;
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && researchMenu.open) {
+    researchMenu.open = false;
+    researchMenu.querySelector('summary').focus();
+  }
+});
+
+// Match the earlier project pages' muted, looping demos while respecting reduced motion.
+// With JavaScript disabled, native controls and poster images still work.
+const demoVideos = document.querySelectorAll('.demo-gallery video');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+function updateDemoPlayback() {
+  demoVideos.forEach(video => {
+    video.autoplay = !reducedMotion.matches;
+    if (reducedMotion.matches) {
+      video.pause();
+    } else {
+      video.muted = true;
+      // Autoplay may be blocked by the browser; native controls remain available.
+      video.play().catch(() => {});
+    }
+  });
 }
-
-function setInterpolationImage(i) {
-  var image = interp_images[i];
-  image.ondragstart = function() { return false; };
-  image.oncontextmenu = function() { return false; };
-  $('#interpolation-image-wrapper').empty().append(image);
-}
-
-
-$(document).ready(function() {
-    // Check for click events on the navbar burger icon
-    $(".navbar-burger").click(function() {
-      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-      $(".navbar-burger").toggleClass("is-active");
-      $(".navbar-menu").toggleClass("is-active");
-
-    });
-
-    var options = {
-			slidesToScroll: 1,
-			slidesToShow: 3,
-			loop: true,
-			infinite: true,
-			autoplay: false,
-			autoplaySpeed: 3000,
-    }
-
-		// Initialize all div with carousel class
-    var carousels = bulmaCarousel.attach('.carousel', options);
-
-    // Loop on each carousel initialized
-    for(var i = 0; i < carousels.length; i++) {
-    	// Add listener to  event
-    	carousels[i].on('before:show', state => {
-    		console.log(state);
-    	});
-    }
-
-    // Access to bulmaCarousel instance of an element
-    var element = document.querySelector('#my-element');
-    if (element && element.bulmaCarousel) {
-    	// bulmaCarousel instance is available as element.bulmaCarousel
-    	element.bulmaCarousel.on('before-show', function(state) {
-    		console.log(state);
-    	});
-    }
-
-    /*var player = document.getElementById('interpolation-video');
-    player.addEventListener('loadedmetadata', function() {
-      $('#interpolation-slider').on('input', function(event) {
-        console.log(this.value, player.duration);
-        player.currentTime = player.duration / 100 * this.value;
-      })
-    }, false);*/
-    preloadInterpolationImages();
-
-    $('#interpolation-slider').on('input', function(event) {
-      setInterpolationImage(this.value);
-    });
-    setInterpolationImage(0);
-    $('#interpolation-slider').prop('max', NUM_INTERP_FRAMES - 1);
-
-    bulmaSlider.attach();
-
-})
+updateDemoPlayback();
+reducedMotion.addEventListener('change', updateDemoPlayback);
