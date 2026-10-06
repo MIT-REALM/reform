@@ -2,7 +2,7 @@
 
 # ReFORM
 
-[![Conference](https://img.shields.io/badge/ICLR-Accepted-success)](https://mit-realm.github.io/reform/)
+[![Conference](https://img.shields.io/badge/ICLR-Accepted-success)](https://openreview.net/forum?id=YvFsyRReeN) [![Project website](https://img.shields.io/badge/Project-Website-blue)](https://mit-realm.github.io/reform/) [![arXiv](https://img.shields.io/badge/arXiv-2602.05051-b31b1b)](https://arxiv.org/abs/2602.05051)
 
 Jax official implementation of ICLR2026 paper: [Songyuan Zhang](https://syzhang092218-source.github.io), [Oswin So](https://oswinso.xyz/), [H. M. Sabbir Ahmad](https://sabbirahmad26.github.io/), [Eric Yang Yu](https://ericyangyu.github.io/), [Matthew Cleaveland](https://www.linkedin.com/in/matthew-cleaveland-4775abba/), [Mitchell Black](https://www.blackmitchell.com/), and [Chuchu Fan](https://chuchu.mit.edu): "[ReFORM: Reflected Flows for On-support Offline RL via Noise Manipulation](https://mit-realm.github.io/reform/)".
 
