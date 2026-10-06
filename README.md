@@ -16,6 +16,8 @@ Jax official implementation of ICLR2026 paper: [Songyuan Zhang](https://syzhang0
 
 </div>
 
+**Update:** Check out [LASER](https://github.com/MIT-REALM/laser), an improved version of ReFORM with *explicit latent entropy regularization*.
+
 <div align="center">
     <img src="./media/antmaze-large.gif" alt="antmaze-large" width="24.55%"/>
     <img src="./media/cube-single.gif" alt="cube-single" width="24.55%"/>
